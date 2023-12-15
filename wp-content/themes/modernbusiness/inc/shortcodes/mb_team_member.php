@@ -1,0 +1,124 @@
+<?php
+
+vc_map(array(
+    'name' => 'MB Team Member',
+    'base' => 'mb_team_member',
+    'description' => 'MB Team Member',
+    'category' => 'MB Elements',
+    'params' => array(
+
+        array(
+            'type'=> 'textfield',
+            'admin_label' => true,
+            'heading' => 'Heading',
+            'description' => 'Heading',
+            'param_name' => 'mb_team_member_heading',
+
+        ),
+        array(
+            'type'=> 'textfield',
+            'admin_label' => true,
+            'heading' => 'Subheading',
+            'description' => 'Subheading',
+            'param_name' => 'mb_team_member_subheading',
+
+        ),
+        array(
+            'type'=> 'colorpicker',
+            'admin_label' => true,
+            'heading' => 'Background Color',
+            'description' => 'Background Color',
+            'param_name' => 'mb_team_member_background_color',
+
+        ),
+        // params group
+        array(
+            'type' => 'param_group',
+            'param_name' => 'members',
+            'heading' => 'Team Member',
+            'description' => 'Team Member',
+            // Note params is mapped inside param-group:
+            'params' => array(
+            array(
+            'type' => 'textfield',
+            'admin_label' => true,
+            'heading' => 'Name',
+            'description' => 'Name',
+            'param_name' => 'mb_team_member_name',
+            ),
+            array(
+                'type' => 'textfield',
+                'admin_label' => true,
+                'heading' => 'Designation',
+                'description' => 'Team Member',
+                'param_name' => 'mb_team_member_designation',
+            ),
+            array(
+                'type'=> 'attach_image',
+                'admin_label' => true,
+                'heading' => 'Image',
+                'description' => 'Image',
+                'param_name' => 'mb_team_member_image',
+    
+            ),
+            )
+            )
+    )
+    ));
+
+    // mb vc shortcodes
+    add_shortcode( 'mb_team_member', 'mb_team_member' );
+    function mb_team_member($atts, $content){
+        extract(shortcode_atts(array(
+            'mb_team_member_heading'=> '',
+            'mb_team_member_subheading'=> '',
+            'mb_team_member_background_color'=> '',
+            'members' => '',
+        ), $atts ));
+    $html = '';
+    $members = vc_param_group_parse_atts($atts['members']);
+
+    if($mb_team_member_background_color){
+        $html .= '
+        <style>
+        #team-member {
+            background-color:'.$mb_team_member_background_color.'!important;
+        }
+
+        </style>
+        ';
+    }
+
+
+$html .= '
+<!-- Team members section-->
+<section class="py-5 bg-light" id="team-member">
+    <div class="container px-5 my-5">
+        <div class="text-center">
+            <h2 class="fw-bolder">'.$mb_team_member_heading.'</h2>
+            <p class="lead fw-normal text-muted mb-5">'.$mb_team_member_subheading.'</p>
+        </div>
+        <div class="row gx-5 row-cols-1 row-cols-sm-2 row-cols-xl-4 justify-content-center">
+        
+        
+    ';
+    foreach($members as $data){
+        $html .= '
+        <div class="col mb-5 mb-5 mb-xl-0">
+        <div class="text-center">
+            <img class="img-fluid rounded-circle mb-4 px-4" 
+            src="'.wp_get_attachment_url($data['mb_team_member_image']).'" alt="..." />
+            <h5 class="fw-bolder">'.$data['mb_team_member_name'].'</h5>
+            <div class="fst-italic text-muted">'.$data['mb_team_member_designation'].'</div>
+        </div>
+    </div>
+        
+        '; 
+    }
+    $html .= '
+    </div>
+    </div>
+</section>
+    ';
+    return $html;
+}
